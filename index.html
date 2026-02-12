@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opdrachten Spel</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 30px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  padding: 20px;
+}
+
+button {
+  padding: 25px;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.opwarming { background: #ff9800; }
+.balbezit { background: #2196f3; }
+.scoren { background: #f44336; }
+.promotie { background: #4caf50; }
+.titel { background: #9c27b0; }
+
+.kaart {
+  margin: 30px 20px;
+  padding: 30px;
+  background: white;
+  color: black;
+  border-radius: 15px;
+  font-size: 20px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+</style>
+</head><link rel="manifest" href="manifest.json">
+
+<body>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log('Service Worker geregistreerd'))
+    .catch(err => console.log('Service Worker fout:', err));
+}
+</script>
+
+<h1>Kies een Zone</h1>
+
+<div class="buttons">
+  <button class="opwarming" onclick="toon('opwarming')">Opwarming</button>
+  <button class="balbezit" onclick="toon('balbezit')">Balbezit</button>
+  <button class="scoren" onclick="toon('scoren')">Scoren</button>
+  <button class="promotie" onclick="toon('promotie')">Promotie</button>
+  <button class="titel" onclick="toon('titel')">Titel</button>
+</div>
+
+<div id="kaart" class="kaart">
+  Kies een zone om te starten
+</div>
+
+<script>
+const opdrachten = {
+  opwarming: [
+    "Je warmt goed op, gooi nog eens.",
+"Blessure tijdens opwarming, ga terug naar start.",
+"Start in de basiself! Drink 2 slokken om dit te vieren.",
+"Je bent helemaal losgekomen in de warming-up → kies iemand die 1 slok drinkt.",
+"Iedereen behalve jij drinkt 1 slok omdat jij de warming-up domineert.",
+"Drink 1 slok om je warming-up te vieren.",
+"Geef 1 slok aan iemand anders die ook opwarmt.",
+"Drink 2 slokken en ga 1 vakje vooruit, je bent volledig opgewarmd.",
+"Iedereen in je team drinkt 1 slok, want jullie warmen samen op.",
+"Drink 1 slok en kies iemand die ook een slok drinkt.",
+"Gooi nog een keer → je bent nu helemaal warm.",
+"Blessurepreventie mislukt → ga terug naar start.",
+"Drink 1 slok, iedereen in je zone drinkt 1 slok om warm te blijven.",
+"Kies iemand die 2 slokken moet drinken omdat hij/zij traag opwarmt.",
+"Drink 1 slok en ga 1 vakje vooruit, je bent helemaal wakker.",
+"Iedereen behalve jij drinkt 2 slokken, jij bent opgewarmd.",
+"Je bent top-opgewarmd → geef 1 slok aan iemand die dat nog niet is.",
+"Drink 1 slok en gooi opnieuw, je bent klaar om te starten.",
+"Iedereen die linkshandig is drinkt 1 slok om op te warmen.",
+"Drink 2 slokken om je warming-up perfect te maken.",
+"Kies twee spelers → zij drinken elk 1 slok, opwarming teamwork!",
+"Drink 1 slok en geef 1 slok weg, iedereen moet actief opwarmen.",
+"Blessure gemist → gooi nogmaals, je warmt veilig op.",
+"Drink 1 slok en ga 1 vakje terug, iets misgelopen in de warming-up.",
+"Iedereen in je team behalve jij → drink 1 slok, jullie warming-up synchroon.",
+"Drink 1 slok om je startplek te vieren.",
+"Kies iemand die 1 slok drinkt, opwarming is een teaminspanning.",
+"Drink 2 slokken, sla volgende beurt over – je bent helemaal klaar.",
+"Iedereen behalve jij → drink 1 slok, jij bent de warming-up master.",
+"Drink 1 slok en ga 1 vakje vooruit, energiek opgewarmd.",
+"Kies iemand die 1 slok drinkt, opwarming teamwork!",
+"Drink 1 slok en gooi nog een keer, helemaal losgekomen.",
+"Iedereen in je team → drink 2 slokken, jullie opwarming is perfect.",
+"Drink 2 slokken om je warming-up te vieren.",
+"Geef 1 slok aan iemand die nog koud is.",
+"Drink 1 slok, iedereen in je team drinkt 1 slok.",
+"Blessure gemist → gooi nogmaals, veilig opgewarmd.",
+"Drink 1 slok, kies iemand die 2 slokken drinkt.",
+"Drink 2 slokken, sla volgende beurt over, je bent volledig warm.",
+"Iedereen behalve jij → drink 1 slok, jij bent klaar voor de start.",
+"Drink 1 slok en ga 1 vakje vooruit, warming-up perfect.",
+"Kies iemand die 1 slok drinkt, opwarming teamwork!",
+"Drink 1 slok en gooi opnieuw, helemaal losgekomen.",
+"Iedereen in je team → drink 1 slok, samen opwarmen.",
+"Drink 2 slokken om je warming-up te vieren.",
+"Geef 1 slok aan iemand die nog koud is.",
+"Drink 1 slok, iedereen in je team drinkt 1 slok.",
+"Blessure gemist → gooi nogmaals, veilig opgewarmd.",
+"Drink 1 slok, kies iemand die 2 slokken drinkt.",
+"Drink 2 slokken, sla volgende beurt over, je bent volledig warm.",
+"Iedereen behalve jij → drink 1 slok, jij bent klaar voor de start.",
+"Drink 1 slok en ga 1 vakje vooruit, warming-up perfect.",
+"Kies iemand die 1 slok drinkt, opwarming teamwork!",
+"Drink 1 slok en gooi opnieuw, helemaal losgekomen.",
+"Iedereen in je team → drink 2 slokken, samen top-opgewarmd.",
+"Drink 2 slokken om je warming-up te vieren.",
+"Kies iemand die 1 slok moet nemen, opwarming teamwork.",
+"Drink 1 slok en geef 1 slok weg, je bent klaar om te spelen.",
+"Iedereen behalve jij → drink 2 slokken, jij bent volledig warm.",
+"Drink 1 slok, start volgende beurt met extra gooibeurt, opwarming voltooid.",
+"Wat is je meest gênante sportmoment ooit?",
+
+  ],
+  balbezit: [
+    "Je houdt de bal goed, gooi nog eens.",
+"Balverlies! Ga 1 vakje terug.",
+"Perfecte pass → kies iemand die 2 slokken drinkt.",
+"Iedereen in je team drinkt 1 slok, want jullie houden de bal goed vast.",
+"Je bent een maestro van balbezit → drink 1 slok.",
+"Mis een pass → drink 2 slokken.",
+"Balgestolen! Geef 2 slokken aan iemand van een ander team.",
+"Iedereen behalve jij → drink 1 slok, jij hebt de bal.",
+"Ga 1 vakje vooruit, je houdt de bal veilig.",
+"Drink 1 slok, iedereen in je zone drinkt 1 slok.",
+"Kies iemand die 2 slokken moet drinken, balverlies gemist.",
+"Iedereen met blauwe kleding → drink 1 slok, balbezit teamkleur.",
+"Gooi nog een keer → bal veilig in jouw team.",
+"Balcontrole perfect → kies iemand die 1 slok drinkt.",
+"Bal verloren → drink 2 slokken en ga 1 vakje terug.",
+"Drink 1 slok, geef 1 slok weg, teamwork in balbezit.",
+"Iedereen behalve jij → drink 2 slokken, jij houdt de bal vast.",
+"Bal succesvol gepasst → drink 1 slok.",
+"Kies iemand die 1 slok drinkt, balcontrole teamwork.",
+"Drink 2 slokken, ga 1 vakje vooruit, je houdt de bal in bezit.",
+"Bal overgenomen → iedereen in je team drinkt 1 slok.",
+"Drink 1 slok en gooi opnieuw, bal blijft bij jou.",
+"Iedereen die ooit een pass heeft gemist → drink 1 slok.",
+"Balverlies in de hoek → ga 2 vakjes terug.",
+"Perfecte dribbel → kies iemand die 1 slok drinkt.",
+"Drink 1 slok, iedereen in je team drinkt 1 slok.",
+"Bal gecontroleerd → ga 1 vakje vooruit.",
+"Drink 2 slokken, iemand anders van je team mag 1 slok geven.",
+"Balverovering mis → drink 2 slokken.",
+"Iedereen behalve jij → drink 1 slok, jij behoudt de bal.",
+"Kies iemand die 2 slokken moet drinken, je passeert hem/haar uit.",
+"Drink 1 slok, ga 1 vakje vooruit, bal veilig in bezit.",
+"Teamwork! → iedereen in je team drinkt 2 slokken.",
+"Balverlies → ga 1 vakje terug en drink 1 slok.",
+"Drink 1 slok, kies iemand die 1 slok drinkt, bal circulatie.",
+"Iedereen die ooit een pass over de zijlijn schopte → 1 slok.",
+"Drink 2 slokken, sla volgende beurt over, je houdt de bal vast.",
+"Balgestolen! → kies iemand die 2 slokken drinkt.",
+"Drink 1 slok, iedereen in je zone drinkt 1 slok.",
+"Balcontrole mist → ga 1 vakje terug.",
+"Drink 1 slok, ga 1 vakje vooruit, bal veilig bij jou.",
+"Kies iemand die 1 slok drinkt, balbezit teamwork.",
+"Iedereen behalve jij → drink 2 slokken, jij houdt de bal.",
+"Drink 2 slokken om je balcontrole te vieren.",
+"Bal succesvol gepasst → geef 1 slok aan iemand van je team.",
+"Drink 1 slok, ga 1 vakje vooruit, bal blijft bij jou.",
+"Iedereen die ooit een corner nam → 1 slok.",
+"Balverlies → kies iemand die 1 slok drinkt.",
+"Drink 1 slok, sla volgende beurt over.",
+"Teamwork geslaagd → iedereen in je team drinkt 1 slok.",
+"Balgestolen door tegenstander → ga 2 vakjes terug.",
+"Drink 2 slokken, ga 1 vakje vooruit, balcontrole hersteld.",
+"Iedereen behalve jij → drink 1 slok, jij hebt de bal.",
+"Kies iemand die 2 slokken drinkt, balverlies gemist.",
+"Drink 1 slok, iedereen in je team drinkt 1 slok.",
+"Perfecte pass → ga 1 vakje vooruit.",
+"Balcontrole mist → drink 2 slokken.",
+"Drink 1 slok, kies iemand die 1 slok drinkt.",
+"Teamwork briljant → iedereen behalve jij drinkt 1 slok.",
+"Drink 2 slokken en gooi nog eens, bal in jouw bezit.",
+"Wie hier vertrouw je het minst met een geheim?",
+  ],
+  scoren: [
+   "Je scoort een prachtig doelpunt → geef 2 slokken aan iemand van een ander team.",
+"Iedereen die ooit een penalty gemist heeft → drink 2 slokken.",
+"Je schiet op doel → drink 2 slokken om je score te vieren.",
+"Perfecte vrije trap → kies iemand die 3 slokken drinkt.",
+"Je mist het doel → ga 1 vakje terug en drink 2 slokken.",
+"Iedereen met blauwe kleding → drink 1 slok, bal in jouw kleur!",
+"Je scoort een hattrick → geef 3 slokken weg.",
+"Iedereen die ooit een eigen doelpunt maakte → drink 2 slokken.",
+"Drink 2 slokken en ga 1 vakje vooruit, je bent een echte afmaker.",
+"Je mist een kans → iedereen behalve jij drinkt 1 slok.",
+"Iedereen met korte mouwen → drink 1 slok, energie op het veld!",
+"Schiet op de paal → drink 3 slokken.",
+"Iedereen die ooit een assist gaf → drink 2 slokken.",
+"Je scoort van ver → kies iemand die 2 slokken drinkt.",
+"Iedereen in je team drinkt 1 slok, omdat jullie goed scoren.",
+"Drink 3 slokken en ga 2 vakjes terug, gemiste kans!",
+"Je scoort een omhaal → iedereen behalve jij drinkt 2 slokken.",
+"Iedereen die ooit een corner scoorde → drink 2 slokken.",
+"Je schiet naast het doel → ga 1 vakje terug.",
+"Drink 2 slokken, kies iemand die 2 slokken drinkt.",
+"Iedereen die ooit een vrije trap scoorde → drink 3 slokken.",
+"Perfecte afwerking → drink 1 slok en ga 1 vakje vooruit.",
+"Iedereen met sneakers aan → drink 1 slok.",
+"Drink 3 slokken en sla volgende beurt over, je bent even buiten adem.",
+"Je scoort met je hoofd → kies iemand die 2 slokken drinkt.",
+"Iedereen die ooit een penalty scoorde → drink 2 slokken.",
+"Drink 2 slokken, iedereen in je team drinkt 1 slok.",
+"Gemiste kans → ga 2 vakjes terug en drink 2 slokken.",
+"Iedereen met sokken in clubkleuren → drink 1 slok.",
+"Je scoort een winnende goal → geef 3 slokken weg.",
+"Drink 2 slokken en gooi nog een keer, perfect schot.",
+"Iedereen die ooit een schot over de zijlijn sloeg → drink 2 slokken.",
+"Je scoort via rebound → kies iemand die 2 slokken drinkt.",
+"Drink 3 slokken, ga 1 vakje terug, gemiste rebound.",
+"Iedereen behalve jij → drink 1 slok, jij bent afmaker.",
+"Schot op doel gemist → drink 2 slokken.",
+"Iedereen die ooit een penalty miste → drink 2 slokken.",
+"Perfecte assist → geef 2 slokken weg.",
+"Drink 3 slokken om je doelpunt te vieren.",
+"Iedereen met lange mouwen → drink 1 slok.",
+"Ga 1 vakje vooruit, je scoort een solo-goal.",
+"Drink 2 slokken en kies iemand die 2 slokken drinkt.",
+"Iedereen in je team behalve jij → drink 1 slok, jij scoort.",
+"Gemiste kopbal → ga 1 vakje terug en drink 2 slokken.",
+"Drink 2 slokken, iedereen die ooit een corner nam → 1 slok.",
+"Iedereen die ooit een vrije trap miste → drink 2 slokken.",
+"Je scoort met een stiftje → geef 3 slokken weg.",
+"Drink 2 slokken, ga 1 vakje vooruit, je bent de afmaker.",
+"Iedereen die ooit een hattrick maakte → drink 3 slokken.",
+"Gemist van dichtbij → drink 3 slokken en ga 1 vakje terug.",
+"Iedereen die ooit een doelpunt vanaf buiten de 16 maakte → drink 2 slokken.",
+"Je scoort uit een rebound → kies iemand die 2 slokken drinkt.",
+"Drink 3 slokken, iedereen behalve jij → 1 slok.",
+"Iedereen met zwarte schoenen → drink 1 slok.",
+"Schot geblokkeerd → ga 1 vakje terug en drink 2 slokken.",
+"Perfecte lob → geef 2 slokken weg.",
+"Drink 3 slokken en gooi nog eens, afwerking perfect.",
+"Iedereen die ooit een vrije trap direct scoorde → drink 2 slokken.",
+"Je scoort de winnende goal → iedereen behalve jij drinkt 2 slokken.",
+"Drink 2 slokken en ga 1 vakje vooruit, het net bulkt van jouw goal!",
+"Post op Instagram Story “Ik ga scoren!”.",
+  ],
+  promotie: [
+    "Je zet een geweldige aanval op → geef 3 slokken aan iemand van een ander team.",
+"Iedereen die ooit een belangrijke penalty miste → drink 4 slokken.",
+"Drink 3 slokken om je sterke start in de Promotiestrijd te vieren.",
+"Perfecte pass naar de spits → kies iemand die 3 slokken drinkt.",
+"Balverlies in het strafschopgebied → ga 1 vakje terug en drink 4 slokken.",
+"Iedereen met blauwe kleding → drink 3 slokken, teamkleur domineert.",
+"Je scoort een cruciaal doelpunt → geef 5 slokken weg.",
+"Iedereen die ooit een belangrijke assist gaf → drink 3 slokken.",
+"Drink 4 slokken en ga 2 vakjes vooruit, aanval succesvol.",
+"Gemiste kans → iedereen behalve jij drinkt 3 slokken.",
+"Iedereen met korte mouwen → drink 3 slokken.",
+"Schot op de paal → drink 4 slokken.",
+"Iedereen die ooit een doelpunt vanaf buiten de 16 maakte → drink 4 slokken.",
+"Je scoort een vrije trap → kies iemand die 4 slokken drinkt.",
+"Iedereen in je team drinkt 3 slokken, teamwork in Promotiestrijd.",
+"Drink 4 slokken en ga 1 vakje terug, gemiste kans!",
+"Iedereen behalve jij → drink 3 slokken, jij scoort.",
+"Iedereen die ooit een hattrick maakte → drink 5 slokken.",
+"Drink 4 slokken, kies iemand die 3 slokken drinkt.",
+"Gemiste kopbal → ga 2 vakjes terug en drink 4 slokken.",
+"Iedereen met zwarte schoenen → drink 3 slokken.",
+"Je scoort met een omhaal → geef 5 slokken weg.",
+"Drink 3 slokken en ga 1 vakje vooruit, doelpunt veilig.",
+"Iedereen die ooit een penalty direct scoorde → drink 4 slokken.",
+"Bal overgenomen door tegenstander → ga 2 vakjes terug en drink 4 slokken.",
+"Drink 3 slokken, iedereen behalve jij → 2 slokken.",
+"Je scoort de winnende goal → geef 4 slokken weg.",
+"Iedereen die ooit een belangrijke assist gaf → drink 3 slokken.",
+"Drink 4 slokken en kies iemand die 3 slokken drinkt.",
+"Gemist van dichtbij → drink 5 slokken en ga 1 vakje terug.",
+"Iedereen met clubkleuren sokken → drink 3 slokken.",
+"Drink 3 slokken, iedereen in je team drinkt 2 slokken.",
+"Perfecte lob → geef 4 slokken weg.",
+"Drink 5 slokken, ga 1 vakje vooruit, doelpunt gevierd.",
+"Iedereen die ooit een belangrijke vrije trap scoorde → drink 4 slokken.",
+"Drink 4 slokken en gooi nog eens, aanval succesvol.",
+"Gemiste rebound → drink 4 slokken en ga 1 vakje terug.",
+"Iedereen behalve jij → drink 3 slokken, jij scoort.",
+"Drink 3 slokken, kies iemand die 4 slokken drinkt.",
+"Iedereen met lange mouwen → drink 3 slokken.",
+"Ga 1 vakje vooruit, je scoort een cruciaal doelpunt.",
+"Drink 5 slokken, iedereen behalve jij → 2 slokken.",
+"Iedereen die ooit een hattrick scoorde → drink 5 slokken.",
+"Gemiste kans → drink 4 slokken en sla volgende beurt over.",
+"Iedereen behalve jij → drink 3 slokken, jij maakt het verschil.",
+"Drink 4 slokken, kies iemand die 4 slokken drinkt.",
+"Iedereen in je team behalve jij → drink 3 slokken.",
+"Drink 3 slokken en ga 1 vakje vooruit, aanval afgerond.",
+"Bal verloren → iedereen behalve jij drinkt 3 slokken.",
+"Drink 5 slokken, geef 3 slokken weg.",
+"Iedereen die ooit een penalty miste → drink 4 slokken.",
+"Je scoort een solo-goal → geef 4 slokken weg.",
+"Drink 3 slokken en kies iemand die 3 slokken drinkt.",
+"Iedereen behalve jij → drink 3 slokken, jij domineert de Promotiestrijd.",
+"Drink 4 slokken en ga 2 vakjes vooruit, aanval succesvol.",
+"Bal terugveroverd → iedereen in je team drinkt 3 slokken.",
+"Drink 5 slokken, sla volgende beurt over, even op adem komen.",
+"Iedereen die ooit een vrije trap miste → drink 4 slokken.",
+"Je scoort de winnende goal → iedereen behalve jij drinkt 4 slokken.",
+"Drink 3 slokken en start volgende beurt met extra gooibeurt, Promotiestrijd gewonnen!",
+"Wat is je meest recente dronken fout?",
+  ],
+  titel: [
+   "Je scoort de winnende goal van het seizoen → geef 8 slokken weg!",
+"Iedereen die ooit een finale won → drink 6 slokken.",
+"Drink 5 slokken om je dominante prestatie te vieren.",
+"Iedereen behalve jij → drink 5 slokken, jij pakt de titel.",
+"Balverlies in de finale → drink 6 slokken en ga 2 vakjes terug.",
+"Iedereen met blauwe schoenen → drink 5 slokken, teamkleur domineert.",
+"Drink 7 slokken, sla volgende beurt over, finale-spanning.",
+"Perfecte vrije trap → kies iemand die 6 slokken drinkt.",
+"Iedereen die ooit een beslissend doelpunt scoorde → drink 6 slokken.",
+"Drink 5 slokken, iedereen behalve jij → 3 slokken.",
+"Gemist van dichtbij → drink 6 slokken en ga 1 vakje terug.",
+"Iedereen behalve jij → drink 5 slokken, jij bent de ster.",
+"Drink 6 slokken en kies iemand die 5 slokken drinkt.",
+"Iedereen die ooit een penalty miste → drink 6 slokken.",
+"Drink 5 slokken, geef 5 slokken weg, teamwork in de finale.",
+"Je scoort een hattrick → iedereen behalve jij drinkt 6 slokken.",
+"Drink 7 slokken, iedereen in je team drinkt 4 slokken.",
+"Iedereen met korte mouwen → drink 5 slokken, warm in de finale.",
+"Balverlies → drink 6 slokken en ga 2 vakjes terug.",
+"Iedereen die ooit een vrije trap direct scoorde → drink 6 slokken.",
+"Drink 5 slokken, kies iemand die 6 slokken drinkt.",
+"Iedereen behalve jij → drink 5 slokken, jij domineert.",
+"Drink 7 slokken, geef 5 slokken weg.",
+"Iedereen die ooit een hattrick scoorde → drink 7 slokken.",
+"Gemist van dichtbij → drink 6 slokken en sla volgende beurt over.",
+"Iedereen behalve jij → drink 6 slokken, jij pakt het punt.",
+"Drink 5 slokken en kies iemand die 5 slokken drinkt.",
+"Iedereen in je team behalve jij → drink 5 slokken.",
+"Drink 6 slokken, iedereen behalve jij → 3 slokken.",
+"Bal terugveroverd → iedereen behalve jij drinkt 6 slokken.",
+"Drink 5 slokken en gooi nog eens.",
+"Iedereen die ooit een beslissende assist gaf → drink 6 slokken.",
+"Drink 8 slokken, sla volgende beurt over, finale-druk!",
+"Je scoort uit een rebound → geef 6 slokken weg.",
+"Iedereen met zwarte schoenen → drink 5 slokken.",
+"Drink 5 slokken, iedereen in je team drinkt 5 slokken.",
+"Iedereen behalve jij → drink 6 slokken, jij pakt het punt.",
+"Drink 7 slokken, kies iemand die 6 slokken drinkt.",
+"Gemiste kopbal → drink 6 slokken en ga 2 vakjes terug.",
+"Iedereen die ooit een penalty scoorde → drink 6 slokken.",
+"Drink 5 slokken, iedereen in je team drinkt 5 slokken.",
+"Iedereen die ooit een finale verloor → drink 6 slokken.",
+"Drink 7 slokken, kies iemand die 5 slokken drinkt.",
+"Gemiste kans → drink 5 slokken en sla volgende beurt over.",
+"Iedereen behalve jij → drink 6 slokken, jij bent de ster.",
+"Drink 6 slokken, iedereen in je team drinkt 4 slokken.",
+"Balverlies → iedereen behalve jij drinkt 5 slokken.",
+"Drink 5 slokken en kies iemand die 6 slokken drinkt.",
+"Iedereen die ooit een beslissend doelpunt scoorde → drink 7 slokken.",
+"Drink 6 slokken, iedereen behalve jij → 5 slokken.",
+"Drink 5 slokken, iedereen in je team drinkt 5 slokken.",
+"Drink 7 slokken, kies iemand die 6 slokken drinkt.",
+"Iedereen behalve jij → drink 6 slokken, jij pakt de titel.",
+"Drink 5 slokken, iedereen in je team drinkt 4 slokken.",
+"Drink 6 slokken, iedereen behalve jij → 3 slokken.",
+"Iedereen die ooit een penalty miste → drink 6 slokken.",
+"Drink 5 slokken en geef 5 slokken weg, teamwork.",
+"Iedereen behalve jij → drink 6 slokken, jij domineert de finale.",
+"Drink 7 slokken en kies iemand die 6 slokken drinkt.",
+"De beslissende goal in de finalematch! Doe een adtje en ga naar het kampioenenvak – je bent gewonnen!",
+"Wat is het meest beschamende dat je ooit seksueel hebt gedaan?",
+  ]
+};
+
+function toon(zone) {
+  const lijst = opdrachten[zone];
+  const kaart = document.getElementById("kaart");
+
+  if (!lijst || lijst.length === 0) {
+    kaart.innerText = "Geen opdrachten beschikbaar.";
+    return;
+  }
+
+  const random = Math.floor(Math.random() * lijst.length);
+
+  kaart.style.transform = "scale(0.9)";
+  setTimeout(() => {
+    kaart.innerText = lijst[random];
+    kaart.style.transform = "scale(1)";
+  }, 150);
+}
+</script>
+
+</body>
+</html>
